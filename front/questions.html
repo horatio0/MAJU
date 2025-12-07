@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>면접 질문 선택 페이지</title>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            background: #f5f6fa;
+            font-size: 22px;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+        .app-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        header {
+            height: 56px;
+            background: #5a6ef8;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            box-shadow: 0 2px 8px rgba(90,110,248,0.08);
+            padding-left: 16px;
+        }
+        main {
+            flex: 0.5;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+        }
+        .main-content {
+            width: 100%;
+            max-width: 340px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .header {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+        .back {
+            display: flex;
+            justify-content: flex-start;
+            margin-bottom: 0;
+        }
+        .back-button {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 7%;
+            color: #333;
+            transition: color 0.2s;
+            flex-shrink: 0;
+        }
+        .back-button:hover {
+            color: #667eea;
+        }
+        h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1vh;
+            width: 100%;
+            display: flex;
+            justify-content: flex-start;
+        }
+        /* h2 {
+            font-size: 2rem;
+            margin: 0;
+            flex: 1;
+            text-align: left;
+        } */
+        .question-list {
+            max-height: 45vh;
+            padding: 0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+        }
+        .question-item {
+            background: #fff;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            position: relative;
+            display: flex;
+            align-items: flex-start;
+            text-align: left;
+            gap: 12px;
+        }
+        .question-item:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 8px rgba(102, 126, 234, 0.15);
+            transform: translateY(-2px);
+        }
+        .question-item.selected {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+        .checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #667eea;
+            border-radius: 4px;
+            flex-shrink: 0;
+            margin: auto 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .question-item.selected .checkbox {
+            background: #667eea;
+        }
+        .checkbox::after {
+            content: '✓';
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            display: none;
+        }
+        .question-item.selected .checkbox::after {
+            display: block;
+        }
+        .start-button {
+            position: static;
+            bottom: 0;
+            border-top: 1px solid #e9ecef;
+            padding: 0;
+            margin: 10% 0;
+            background: #fafbfc;
+        }
+        .start-button button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            background: #667eea;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .start-button button:hover:not(:disabled) {
+            background: #5568d3;
+        }
+        .start-button button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+        .empty-state-text {
+            font-size: 0.9rem;
+        }
+        footer {
+            height: 48px;
+            background: #5a6ef8;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 -2px 8px rgba(90,110,248,0.08);
+            font-size: 1rem;
+            gap: 3rem;
+        }        
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header></header>
+        <div class="back">
+            <button class="back-button" onclick="window.location.href='dashboard.html'">←</button> 
+        </div>
+        <main>
+            <div class="main-content">
+                <h2>예상질문 선택</h2>
+                <div class="question-list" id="questionList">
+                    <!-- 질문 목록이 여기에 동적으로 추가됩니다 -->
+                </div>
+                <div class="start-button">
+                    <button id="startButton" disabled>질문을 선택해주세요</button>
+                </div>
+            </div>
+        </main>
+        <footer>
+            <span>MAJU Interview Assistant</span>
+            <span>v0.1.0</span>
+        </footer>
+    </div>
+
+    <script>
+        // 테스트용 샘플 데이터
+        const sampleQuestionData = [
+            {
+                id: 1,
+                title: '자기소개를 해주세요'
+            },
+            {
+                id: 2,
+                title: '입사 후 어떤 기여를 할 수 있다고 생각하시나요?'
+            },
+            {
+                id: 3,
+                title: '왜 우리 회사를 선택하셨나요?'
+            },
+            {
+                id: 4,
+                title: '팀 프로젝트에서 갈등이 발생했을 때 어떻게 해결하셨나요?'
+            },
+            {
+                id: 5,
+                title: '본인의 장단점을 말씀해주세요'
+            },
+            {
+                id: 6,
+                title: '5년 후 자신의 모습을 어떻게 그리고 계신가요?'
+            },
+            {
+                id: 7,
+                title: 'HTTP와 HTTPS의 차이점을 설명해주세요'
+            },
+            {
+                id: 8,
+                title: '동기와 비동기의 차이점을 설명해주세요'
+            },
+            {
+                id: 9,
+                title: '팀원 간 의견 차이로 갈등이 발생했을 때 어떻게 대처하시겠습니까?'
+            },
+            {
+                id: 10,
+                title: '웹브라우저에서 www.google.com에 접속하는 과정을 아는 대로 설명하세요'
+            }
+        ];
+
+        let selectedQuestions = new Set();
+
+        // 질문 아이템 렌더링
+        function renderQuestionItem(item) {
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'question-item';
+            if (selectedQuestions.has(item.id)) {
+                itemDiv.classList.add('selected');
+            }
+
+            const checkbox = document.createElement('div');
+            checkbox.className = 'checkbox';
+
+            const title = document.createElement('div');
+            title.className = 'question-title';
+            title.textContent = item.title;
+
+            itemDiv.appendChild(checkbox);
+            itemDiv.appendChild(title);
+
+            itemDiv.onclick = () => {
+                toggleQuestion(item.id);
+            };
+
+            return itemDiv;
+        }
+
+        let allQuestions = [];
+
+        // 질문 선택/해제 토글
+        function toggleQuestion(questionId) {
+            if (selectedQuestions.has(questionId)) {
+                selectedQuestions.delete(questionId);
+            } else {
+                selectedQuestions.add(questionId);
+            }
+            updateStartButton();
+            renderQuestionList(allQuestions);
+        }
+
+        // 시작 버튼 상태 업데이트
+        function updateStartButton() {
+            const startBtn = document.getElementById('startButton');
+            const count = selectedQuestions.size;
+            startBtn.disabled = count === 0;
+            startBtn.textContent = count > 0 ? `선택한 ${count}개 질문 시작하기` : '질문을 선택해주세요';
+        }
+
+        // 질문 목록 렌더링
+        function renderQuestionList(questionData) {
+            const container = document.getElementById('questionList');
+            container.innerHTML = '';
+
+            if (!questionData || questionData.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🙅</div>
+                        <div class="empty-state-text">예상 질문 데이터가 없습니다<br>나중에 다시 시도해주세요</div>
+                    </div>
+                `;
+                return;
+            }
+
+            questionData.forEach(item => {
+                const itemElement = renderQuestionItem(item);
+                container.appendChild(itemElement);
+            });
+        }
+
+        // 서버에서 질문 데이터 가져오기
+        async function loadQuestionData() {
+            try {
+                //실제로는 서버 API 호출
+                // const response = await fetch('http://35.216.55.144:80/api/questions');
+                // const data = await response.json();
+                // return data.data; // API 응답 구조에 따라 .data가 필요할 수 있음
+                return sampleQuestionData; // 샘플 데이터 반환
+
+            } catch (error) {
+                console.error('예상질문 데이터 로드 오류:', error);
+                return [];
+            }
+        }
+
+        // 시작 버튼 클릭 이벤트
+        function handleStart() {
+            if (selectedQuestions.size === 0) {
+                alert('최소 1개 이상의 질문을 선택해주세요.');
+                return;
+            }
+
+            // 선택된 질문들을 필터링하고 순서대로 정렬
+            const selectedQuestionList = allQuestions
+                .filter(q => selectedQuestions.has(q.id))
+                .map((q, index) => ({
+                    ...q,
+                    order: index + 1
+                }));
+
+            // sessionStorage에 저장
+            const sessionId = Date.now().toString(); // 또는 uuid 등
+            sessionStorage.setItem('sessionId', sessionId);
+            sessionStorage.setItem('selectedQuestions', JSON.stringify(selectedQuestionList));
+            sessionStorage.setItem('currentQuestionIndex', '0');
+
+
+            // 첫 번째 질문 페이지로 이동
+            window.location.href = 'answer.html';
+        }
+
+        // 초기화
+        async function init() {
+            allQuestions = await loadQuestionData();
+            renderQuestionList(allQuestions);
+            updateStartButton();
+
+            // 시작 버튼 이벤트 리스너
+            document.getElementById('startButton').addEventListener('click', handleStart);
+        }
+
+        init();
+    </script>
+</body>
+</html>

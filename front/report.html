@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>면접 분석 리포트</title>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            background: #f5f6fa;
+            font-size: 22px;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            overflow-x: hidden;
+        }
+        .app-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        header {
+            height: 56px;
+            background: #5a6ef8;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            box-shadow: 0 2px 8px rgba(90,110,248,0.08);
+            padding-left: 16px;
+        }
+
+        .back {
+            /* border: 1px solid #000; */
+            display: flex;
+            justify-content: flex-start;
+            margin-bottom: 0;
+        }
+
+        .back-button {
+            background: none;
+            border: none;
+            font-size: 1.0rem;
+            cursor: pointer;
+            padding: 4% 7%;
+            color: #333;
+            transition: color 0.2s;
+            flex-shrink: 0;
+        }
+
+        .back-button:hover {
+            color: #667eea;
+        }
+        
+        main {
+            flex: 1;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+        }
+        .main-content {
+            width: 100%;
+            margin: 0 auto;
+            padding: 0 5%;
+            text-align: center;
+            overflow-x: hidden;
+        }
+
+        h2 {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
+            margin-top: 0;
+        }
+
+        /* h2 {
+            margin: 0;
+            font-size: 1.2rem;
+            color: #333;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        } */
+
+        .score-section {
+            text-align: center;
+            padding: 10%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            color: white;
+            margin-bottom: 10%;
+        }
+
+        .score-value {
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 8px 0;
+        }
+
+        .score-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .section {
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 600;
+            margin: 10%;
+            color: #333;
+        }
+
+        .issue-category {
+            margin-bottom: 16px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .category-name {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #495057;
+        }
+
+        .issue-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            font-size: 0.85rem;
+        }
+
+        .issue-name {
+            color: #6c757d;
+        }
+
+        .issue-count {
+            font-weight: 600;
+            color: #dc3545;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.3s ease;
+        }
+
+        .video-section {
+            margin-bottom: 16px;
+        }
+
+        .video-selector {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            overflow-x: auto;
+        }
+
+        .video-tab {
+            padding: 8px 16px;
+            border: 1px solid #dee2e6;
+            border-radius: 20px;
+            background: #fff;
+            cursor: pointer;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .video-tab.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        video {
+            width: 100%;
+            border-radius: 8px;
+            background: #000;
+        }
+
+        .detailed-issues {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .issue-frame {
+            padding: 8px;
+            margin-bottom: 8px;
+            background: #fff;
+            border-left: 3px solid #667eea;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+
+        .frame-number {
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 4px;
+        }
+
+        .frame-issues {
+            color: #6c757d;
+        }
+
+        .frame-issues span {
+            display: inline-block;
+            margin-right: 8px;
+            padding: 2px 6px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        .metadata {
+            font-size: 0.8rem;
+            color: #6c757d;
+            text-align: center;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .chart-container {
+            overflow-x: auto;
+            overflow-y: hidden;
+            max-height: 450px;
+        }
+
+        #issueChart {
+            max-height: 400px;
+            min-width: 100%;
+        }
+
+        footer {
+            height: 48px;
+            background: #5a6ef8;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 -2px 8px rgba(90,110,248,0.08);
+            font-size: 1rem;
+            gap: 3rem;
+        }
+
+        /* 모바일 반응형 스타일 */
+        @media (max-width: 768px) {
+            html, body {
+                font-size: 16px;
+            }
+
+            .main-content {
+                padding: 16px;
+            }
+
+            .section-title {
+                font-size: 1.2rem;
+                margin: 5% 0 3%;
+            }
+
+            .score-value {
+                font-size: 3rem;
+            }
+
+            .detailed-issues {
+                max-height: 300px;
+            }
+
+            .chart-container {
+                max-height: 300px;
+            }
+
+            #issueChart {
+                max-height: 250px !important;
+                min-width: 1200px;
+            }
+
+            .issue-category {
+                padding: 10px;
+                margin-bottom: 12px;
+            }
+
+            .category-name {
+                font-size: 0.95rem;
+            }
+
+            .issue-item {
+                font-size: 0.8rem;
+            }
+
+            footer {
+                font-size: 0.85rem;
+                gap: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header></header>
+        <div class="back">
+            <button class="back-button" onclick="window.location.href='history.html'">X</button>
+        </div>
+        <main>
+            <div class="main-content">
+                <h2>면접 분석 리포트</h2>
+                <!-- 전체 점수 -->
+                <div class="score-section">
+                    <div class="score-label">종합 점수</div>
+                    <div class="score-value" id="totalScore">-</div>
+                    <!-- <div class="score-label" id="scoreDetails">-</div> -->
+                </div>
+
+                <!-- 동영상 섹션 -->
+                <div class="video-section">
+                    <div class="section-title">답변 영상</div>
+                    <div class="video-selector" id="videoSelector"></div>
+                    <video id="videoPlayer" controls style="display: none;"></video>
+                    <p id="videoStatus" style="text-align: center; color: #6c757d; font-size: 0.85rem;">영상을 불러오는 중...</p>
+                </div>
+
+                <!-- 카테고리별 이슈 통계 -->
+                <div class="section">
+                    <div class="section-title">영역별 이슈 통계</div>
+                    <div id="issueCategories"></div>
+                </div>
+
+                <!-- 이슈 발생 그래프 -->
+                <div class="section">
+                    <div class="section-title">프레임별 이슈 발생 추이</div>
+                    <div class="chart-container">
+                        <canvas id="issueChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- 프레임별 상세 이슈 -->
+                <div class="section">
+                    <div class="section-title">상세 이슈</div>
+                    <div class="detailed-issues" id="detailedIssues"></div>
+                </div>
+
+                <!-- 메타데이터 -->
+                <div class="metadata" id="metadata"></div>
+            </div>
+        </main>
+        <footer>
+            <span>MAJU Interview Assistant</span>
+            <span>v0.1.0</span>
+        </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // 차트 인스턴스 전역 변수
+        let chartInstance = null;
+        
+        // 이슈 이름 한글 변환 매핑
+        const issueNameMap = {
+            'gaze_averted': '시선 회피', 'frown': '인상 찌푸림', 'squint': '눈 찡그림',
+            'face_not_detected': '얼굴 미감지', 'jaw_forward': '턱 앞으로', 'jaw_side': '턱 옆으로',
+            'jaw_open': '입 벌림', 'mouth_funnel': '입 오므림', 'lip_pucker': '입술 오므림',
+            'smile': '미소', 'mouth_frown': '입 찌푸림', 'mouth_dimple': '보조개',
+            'mouth_stretch': '입 늘림', 'lip_roll': '입술 말기', 'chin_raise': '턱 올림',
+            'lip_press': '입술 누름', 'lower_lip_down': '아랫입술 내림', 'upper_lip_up': '윗입술 올림',
+            'cheek_puff': '볼 부풀림', 'cheek_squint': '볼 찡그림', 'nose_sneer': '코 찡그림',
+            'shoulder': '어깨 기울임', 'face_forward': '얼굴 방향', 'body_tilt': '몸 기울임',
+            'knee_position': '무릎 위치', 'knee_balance': '무릎 균형', 'hand_position': '손 위치',
+            'stiff_posture': '경직된 자세', 'leg_alignment': '다리 정렬', 'pose_not_detected': '자세 미감지',
+            'issues': '이슈'
+        };
+        
+        // 샘플 데이터 (데이터가 없을 경우 사용)
+        const sampleData = {
+            "metadata": { "total_frames": 0, "analyzed_frames": 0 },
+            "issue_count": { "eye": {}, "mouth": {}, "pose": {} },
+            "score": { "total_score": 0, "face_issue_frames": 0, "pose_issue_frames": 0, "both_issue_frames": 0 },
+            "detailed_issues": []
+        };
+
+        // 데이터 로드
+        let reportData = sampleData;
+        
+        // 1. localStorage에서 최신 결과 확인
+        const analysisResultJson = localStorage.getItem('latestAnalysisResult');
+        if (analysisResultJson) {
+            try {
+                reportData = JSON.parse(analysisResultJson);
+                console.log("Loaded analysis data from localStorage:", reportData);
+            } catch (e) {
+                console.error("Failed to parse analysis result", e);
+            }
+        }
+        
+        // 2. URL에서 taskId 파라미터 확인
+        const urlParams = new URLSearchParams(window.location.search);
+        const taskId = urlParams.get('taskId');
+        
+        if (taskId) {
+            // taskId가 있으면 서버에서 해당 보고서 가져오기
+            fetch(`http://35.216.55.144:80/api/analyze/${taskId}`)
+                .then(response => response.json())
+                .then(result => {
+                    if (result.data && result.data.commonAnalysis) {
+                        reportData = result.data.commonAnalysis;
+                        console.log("Loaded analysis data from server:", reportData);
+                        init();
+                    }
+                })
+                .catch(error => {
+                    console.error("Failed to load report from server:", error);
+                    init();
+                });
+        } else {
+            init();
+        }
+
+        // 초기화 및 렌더링
+        function init() {
+            if (reportData) {
+                renderScore(reportData);
+                renderIssueCategories(reportData);
+                renderIssueChart(reportData);
+                renderDetailedIssues(reportData);
+                renderMetadata(reportData);
+            }
+            
+            // 비디오 로드
+            const urlParams = new URLSearchParams(window.location.search);
+            const taskId = urlParams.get('taskId');
+            if (taskId) {
+                loadVideo(taskId);
+            } else {
+                const videoStatus = document.getElementById('videoStatus');
+                if (videoStatus) {
+                    videoStatus.textContent = "영상을 불러올 수 없습니다.";
+                }
+            }
+        }
+
+        // 영상 로드
+        function loadVideo(taskId) {
+            const videoPlayer = document.getElementById('videoPlayer');
+            const videoStatus = document.getElementById('videoStatus');
+            
+            const token = localStorage.getItem('jwtToken');
+            const videoUrl = `http://35.216.55.144:80/api/video/${taskId}`;
+            
+            // JWT 토큰을 헤더에 포함할 수 없으므로 fetch로 blob 가져오기
+            fetch(videoUrl, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.blob();
+                }
+                throw new Error('Failed to load video');
+            })
+            .then(blob => {
+                const blobUrl = URL.createObjectURL(blob);
+                videoPlayer.src = blobUrl;
+                videoPlayer.style.display = 'block';
+                videoStatus.style.display = 'none';
+            })
+            .catch(error => {
+                console.error('Video load error:', error);
+                videoStatus.textContent = "영상을 불러오는데 실패했습니다.";
+            });
+        }
+
+        // 점수 표시
+        function renderScore(data) {
+            const totalScore = data.score?.total_score || 0;
+            document.getElementById('totalScore').textContent = totalScore.toFixed(1);
+        }
+
+        // 카테고리별 이슈 통계 표시
+        function renderIssueCategories(data) {
+            const categories = ['eye', 'mouth', 'pose'];
+            const categoryNames = { 'eye': '시선/표정', 'mouth': '입 모양', 'pose': '자세' };
+            const container = document.getElementById('issueCategories');
+            container.innerHTML = '';
+
+            categories.forEach(category => {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'issue-category';
+                
+                const categoryName = document.createElement('div');
+                categoryName.className = 'category-name';
+                categoryName.textContent = categoryNames[category];
+                categoryDiv.appendChild(categoryName);
+
+                const issues = data.issue_count ? data.issue_count[category] : {};
+                if (!issues) return;
+
+                let totalIssues = 0;
+                let maxIssues = 0;
+
+                Object.entries(issues).forEach(([issueName, count]) => {
+                    if (issueName !== 'issues' && count > 0) {
+                        totalIssues += count;
+                        maxIssues = Math.max(maxIssues, count);
+                    }
+                });
+
+                Object.entries(issues).forEach(([issueName, count]) => {
+                    if (issueName !== 'issues' && count > 0) {
+                        const issueItem = document.createElement('div');
+                        issueItem.className = 'issue-item';
+                        
+                        const nameSpan = document.createElement('span');
+                        nameSpan.className = 'issue-name';
+                        // 한글 변환
+                        nameSpan.textContent = issueNameMap[issueName] || issueName.replace(/_/g, ' ');
+                        
+                        const countSpan = document.createElement('span');
+                        countSpan.className = 'issue-count';
+                        countSpan.textContent = count;
+                        
+                        issueItem.appendChild(nameSpan);
+                        issueItem.appendChild(countSpan);
+                        categoryDiv.appendChild(issueItem);
+                    }
+                });
+                
+                // 진행 바 (이슈가 있을 때만)
+                if (totalIssues > 0) {
+                    const progressBar = document.createElement('div');
+                    progressBar.className = 'progress-bar';
+                    const progressFill = document.createElement('div');
+                    progressFill.className = 'progress-fill';
+                    // 최대값 기준 비율 계산 (임의 조정)
+                    progressFill.style.width = `${Math.min((totalIssues / 10) * 100, 100)}%`;
+                    progressBar.appendChild(progressFill);
+                    categoryDiv.appendChild(progressBar);
+                }
+
+                container.appendChild(categoryDiv);
+            });
+        }
+
+        // 프레임별 이슈 발생 그래프
+        function renderIssueChart(data) {
+            console.log('renderIssueChart - data:', data);
+            console.log('renderIssueChart - detailed_issues:', data.detailed_issues);
+            
+            const canvas = document.getElementById('issueChart');
+            
+            // 기존 차트가 있으면 파괴
+            if (chartInstance) {
+                chartInstance.destroy();
+                chartInstance = null;
+            }
+            
+            // Chart.js의 기존 인스턴스 제거
+            const existingChart = Chart.getChart(canvas);
+            if (existingChart) {
+                existingChart.destroy();
+            }
+            
+            const ctx = canvas.getContext('2d');
+            
+            // detailed_issues에서 프레임별 이슈 개수 집계
+            const frameIssueCount = {};
+            let maxFrame = 0;
+            if (data.detailed_issues && data.detailed_issues.length > 0) {
+                data.detailed_issues.forEach(detail => {
+                    const frame = detail.frame || 0;
+                    let count = 0;
+                    
+                    // eye, mouth, pose 각각의 이슈 개수 카운트
+                    if (detail.eye && Array.isArray(detail.eye)) count += detail.eye.length;
+                    if (detail.mouth && Array.isArray(detail.mouth)) count += detail.mouth.length;
+                    if (detail.pose && Array.isArray(detail.pose)) count += detail.pose.length;
+                    
+                    frameIssueCount[frame] = count;
+                    maxFrame = Math.max(maxFrame, frame);
+                });
+            }
+            
+            // 전체 프레임 범위 (1부터 maxFrame까지)
+            const allFrames = [];
+            const allIssueCounts = [];
+            for (let i = 1; i <= maxFrame; i++) {
+                if (i === 1 || i % 5 === 1) {  // 1, 6, 11, 16... (5프레임 단위)
+                    allFrames.push(i);
+                    allIssueCounts.push(frameIssueCount[i] || 0);
+                }
+            }
+            
+            // 프레임 수에 따라 동적으로 캔버스 너비 조정
+            const dynamicWidth = Math.max(allFrames.length * 15, 800);
+            const chartHeight = 400;
+            
+            // 캔버스 실제 픽셀 크기 설정
+            canvas.width = dynamicWidth;
+            canvas.height = chartHeight;
+            canvas.style.width = dynamicWidth + 'px';
+            canvas.style.height = chartHeight + 'px';
+            
+            // Chart.js로 그래프 그리기
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: allFrames,
+                    datasets: [{
+                        label: '이슈 개수',
+                        data: allIssueCounts,
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.1,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#667eea',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: false,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                font: {
+                                    size: 14
+                                },
+                                padding: 15
+                            }
+                        },
+                        title: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: '프레임 번호',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            },
+                            ticks: {
+                                maxRotation: 0,
+                                autoSkip: true,
+                                autoSkipPadding: 20,
+                                font: {
+                                    size: 12
+                                }
+                            },
+                            grid: {
+                                display: true,
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: '이슈 개수',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            },
+                            beginAtZero: true,
+                            min: 0,
+                            ticks: {
+                                stepSize: 1,
+                                font: {
+                                    size: 12
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 프레임별 상세 이슈 표시
+        function renderDetailedIssues(data) {
+            const container = document.getElementById('detailedIssues');
+            container.innerHTML = '';
+
+            const details = data.detailed_issues;
+
+            if (details.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: #6c757d; padding: 20px;">이슈가 없습니다.</div>';
+                return;
+            }
+
+            details.forEach(issue => {
+                const frameDiv = document.createElement('div');
+                frameDiv.className = 'issue-frame';
+                
+                const frameNumber = document.createElement('div');
+                frameNumber.className = 'frame-number';
+                frameNumber.textContent = `프레임 ${issue.frame}`;
+                frameDiv.appendChild(frameNumber);
+
+                const frameIssues = document.createElement('div');
+                frameIssues.className = 'frame-issues';
+                
+                const allIssues = [];
+                if (issue.eye) issue.eye.forEach(i => allIssues.push(`시선: ${i.replace(/_/g, ' ')}`));
+                if (issue.mouth) issue.mouth.forEach(i => allIssues.push(`입: ${i.replace(/_/g, ' ')}`));
+                if (issue.pose) issue.pose.forEach(i => allIssues.push(`자세: ${i.replace(/_/g, ' ')}`));
+
+                if (allIssues.length === 0) {
+                    frameIssues.innerHTML = '<span style="color: #28a745;">이슈 없음</span>';
+                } else {
+                    allIssues.forEach(issueText => {
+                        const span = document.createElement('span');
+                        span.textContent = issueText;
+                        frameIssues.appendChild(span);
+                    });
+                }
+
+                frameDiv.appendChild(frameIssues);
+                container.appendChild(frameDiv);
+            });
+        }
+
+        // 메타데이터 표시
+        function renderMetadata(data) {
+            const metadata = data.metadata;
+            document.getElementById('metadata').textContent = 
+                `전체 프레임: ${metadata.total_frames || 0} | 분석 프레임: ${metadata.analyzed_frames || 0}`;
+        }
+
+        // 실행
+        init();
+    </script>
+</body>
+</html>
+

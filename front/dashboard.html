@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>대시보드</title>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            background: #f5f6fa;
+            font-size: 22px;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            color: #0f172a;
+        }
+        .app-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        header {
+            height: 56px;
+            background: #5a6ef8;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            box-shadow: 0 2px 8px rgba(90,110,248,0.08);
+            padding-left: 16px;
+        }
+        main {
+            flex: 0.75;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .main-content {
+            width: 100%;
+            max-width: 340px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .actions {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin: 32px 0;
+        }
+        .action-button {
+            display: flex;
+            flex-direction: column;
+            border: none;
+            border-radius: 0.5em;
+            padding: 1em 2em;
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #fff;
+            text-align: left;
+            cursor: pointer;
+            transition: transform 0.1s, box-shadow 0.15s;
+            background: linear-gradient(135deg, #5a6ef8, #9b63ff);
+            box-shadow: 0 14px 28px rgba(96, 114, 255, 0.15);
+        }
+        .action-button.secondary {
+            background: #f3f4f6;
+            color: #4b5563;
+            box-shadow: none;
+        }
+        .action-button span {
+            font-size: 0.95rem;
+            font-weight: 400;
+            opacity: 0.85;
+        }
+        .action-button:active {
+            transform: translateY(1px);
+        }
+        h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1vh;
+            width: 100%;
+            display: flex;
+            justify-content: flex-start;
+        }
+        footer {
+            height: 48px;
+            background: #5a6ef8;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 -2px 8px rgba(90,110,248,0.08);
+            font-size: 1rem;
+            gap: 3rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <header></header>
+        <main>
+            <div class="main-content">
+                <h2 style="margin:10%; font-size:1.5rem;">안녕하세요, MAJU님</h2>
+                <section class="actions">
+                    <button class="action-button" data-link="questions.html">
+                        면접 연습하기
+                        <span>유형별 면접 대비</span>
+                    </button>
+                    <button class="action-button secondary" data-link="history.html">
+                        히스토리
+                        <span>결과 다시 보기</span>
+                    </button>
+                    <button class="action-button secondary" id="flushIndexedDBBtn">
+                        IndexedDB 초기화
+                        <span>저장된 테스트 영상 삭제</span>
+                    </button>
+                </section>
+            </div>
+        </main>
+        <footer>
+            <span>MAJU Interview Assistant</span>
+            <span>v0.1.0</span>
+        </footer>
+    </div>
+
+    <script>
+        document.querySelectorAll('.action-button').forEach((button) => {
+            button.addEventListener('click', () => {
+                const link = button.dataset.link;
+                if (link) {
+                    window.location.href = link;
+                }
+            });
+        });
+
+
+        // IndexedDB + sessionStorage 초기화 임시 버튼
+            document.getElementById('flushIndexedDBBtn').addEventListener('click', () => {
+            if (confirm('정말로 모든 테스트 영상을 삭제하고 세션 정보를 초기화하시겠습니까?')) {
+                // IndexedDB 삭제
+                const req = indexedDB.deleteDatabase('MAJU_TestVideos');
+                req.onsuccess = () => {
+                    // sessionStorage 정보 삭제
+                    sessionStorage.removeItem('sessionId');
+                    sessionStorage.removeItem('selectedQuestions');
+                    sessionStorage.removeItem('currentQuestionIndex');
+                    alert('IndexedDB와 세션 정보가 초기화되었습니다.');
+                };
+                req.onerror = () => alert('삭제 실패');
+            }
+        });
+
+        document.getElementById('logoutButton').addEventListener('click', () => {
+            // TODO: 필요 시 토큰 삭제 등 로그아웃 처리 추가
+            window.location.href = 'login.html';
+        });
+    </script>
+</body>
+</html>
+
