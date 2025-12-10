@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>지난 면접 연습 기록 리스트</title>
+    <link rel="stylesheet" href="index.css">
     <style>
-        html, body {
+        /* html, body {
             height: 100%;
             margin: 0;
             padding: 0;
@@ -39,19 +40,19 @@
             max-width: 340px;
             margin: 0 auto;
             text-align: center;
-        }
-
+        } */
+        
         .header {
             display: flex;
             flex-direction: column;
-            align-items: flex-start;
-            /* justify-content: center;
-            text-align: center; */
+            align-items: center;
+            justify-content: center;
+            text-align: center;
             margin-bottom: 30px;
             /* position: relative; */
         }
 
-        .back {
+        /* .back {
             display: flex;
             justify-content: flex-start;
             margin-bottom: 0;
@@ -68,13 +69,14 @@
         }
         .back-button:hover {
             color: #667eea;
-        }
+        } */
 
         h2 {
             width: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
+            margin: 10%;
         }
 
         /* h2 {
@@ -137,15 +139,18 @@
         }
 
         .refresh-button {
+            padding: 4px 8px;
+            border-radius: 8px;
             background: rgba(255, 255, 255, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.3);
             color: white;
-            padding: 8px 16px;
-            border-radius: 8px;
             cursor: pointer;
             font-size: 0.9rem;
-            margin-top: 12px;
+            /* margin-top: 12px; */
             transition: all 0.2s;
+            margin-bottom: 20px;
+            background: #667eea;
+            border-color: #667eea;
         }
 
         .refresh-button:hover {
@@ -238,7 +243,7 @@
             font-size: 0.9rem;
         }
 
-        footer {
+        /* footer {
             height: 48px;
             background: #5a6ef8;
             color: #fff;
@@ -248,7 +253,7 @@
             box-shadow: 0 -2px 8px rgba(90,110,248,0.08);
             font-size: 1rem;
             gap: 3rem;
-        } 
+        } */
 
         /* .back-button {
             position: sticky;
@@ -314,10 +319,10 @@
         </div>
         <main>
             <div class="main-content">
-                <h2>면접 연습 기록</h2>
-                
-                <!-- 전체 새로고침 버튼 -->
-                <button class="refresh-button" onclick="location.reload()" style="margin-bottom: 20px; background: #667eea; border-color: #667eea;">전체 새로고침</button>
+                <div class="header">
+                    <h2>면접 연습 기록</h2>
+                    <button class="refresh-button" onclick="location.reload()">전체 새로고침</button>
+                </div>
                 
                 <!-- 현재 분석 중인 작업 표시 -->
                 <div id="currentTaskSection" style="display: none;" class="current-task">
